@@ -1,7 +1,32 @@
-import datetime, asyncio, random, string, discord, re
+import datetime, asyncio, random, string, discord, math, re
 from discord.ext import commands
 from discord import app_commands
-from etc import *
+from collections import Counter
+
+with open("TOKEN", encoding="utf-8") as f:
+    TOKEN = f.read()
+URL_PATTERN = r"\b(?:https?:\/\/)?(?:www\.)?[^\s]+\b"
+MEMTION_PATTERN = r"<@!?(\d+)>|<@&(\d+)>"
+ENTROPY_THRESHOLD = 2.0
+
+HELP_MESSAGE = """## Commands
+```
+/help: Show this message
+/dc: (delete channel) Deletes all channels including the specified channel name.
+```"""
+
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix="!", intents=intents)
+
+def calcEntropy(s):
+    length = len(s)
+    if length == 0:
+        return 0
+    freq = Counter(s)
+    probabilities = [freq[char] / length for char in freq]
+    entropy = -sum(p * math.log2(p) for p in probabilities)
+    return entropy
 
 class Sacuma(commands.Cog):
     def __init__(self, bot):
@@ -80,3 +105,13 @@ class Sacuma(commands.Cog):
                 except:
                     pass
                 break
+
+def main():
+    @bot.event
+    async def on_ready():
+        await bot.tree.sync()
+    asyncio.run(bot.add_cog(Sacuma(bot)))
+    bot.run(TOKEN)
+    
+if __name__ == "__main__":
+    main()
