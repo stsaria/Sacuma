@@ -55,7 +55,7 @@ class Sacuma(commands.Cog):
         await asyncio.gather(*(self.deleteChannelName(channel, channelname, id) for channel in interaction.guild.channels))
         await interaction.response.send_message(f"{self.deleteCount[id][0]} Success.\n{self.deleteCount[id][1]} Failed.", ephemeral=True)
     @commands.Cog.listener()
-    async def on_guild_join(guild:discord.Guild):
+    async def on_guild_join(self, guild:discord.Guild):
         for channel in guild.text_channels:
             await channel.send(f"# Hi im Sacuma\nI can delete trolling Message/Channel.\n{HELP_MESSAGE}")
             break
